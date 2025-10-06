@@ -6,12 +6,9 @@ import (
 	"os"
 	"testing"
 
-	_ "github.com/lib/pq"
-)
+	"github.com/shama3541/simplebank/util"
 
-const (
-	dbDriver = "postgres"
-	dbSource = "postgresql://root:mysecret@localhost:5432/simple_bank?sslmode=disable"
+	_ "github.com/lib/pq"
 )
 
 var testQueries *Queries
@@ -19,7 +16,11 @@ var testDb *sql.DB
 
 func TestMain(m *testing.M) {
 	var err error
-	testDb, err = sql.Open(dbDriver, dbSource)
+	config, err := util.LoadConfig("/Users/shamadeep/workspace/go-workspace/simple_bank/app.env")
+	if err != nil {
+		log.Println("Error loading config file:", err)
+	}
+	testDb, err = sql.Open(config.DBDriver, config.DBSource)
 	if err != nil {
 		log.Fatal("cannot connect to db", err)
 	}

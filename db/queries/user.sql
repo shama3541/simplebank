@@ -7,4 +7,4 @@ INSERT INTO users (
 
 
 -- name: GetUser :one
-SELECT * FROM users where email = $1;
+SELECT * FROM users where username = $1;

@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	db "github.com/shama3541/simplebank/db/database"
@@ -90,9 +91,25 @@ func (server *Server) UserLoginHanderl(ctx *gin.Context) {
 		})
 		return
 	}
+	duration, err := time.ParseDuration(server.config.Duration)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Invalid duration format in configuration",
+			"error":   err.Error(),
+		})
+		return
+	}
+	jwttoken, err := server.tokenMaker.CreateToken(req.Username, duration)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "interna; server error",
+			"error":   err.Error(),
+		})
+	}
 
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "User is able to login ",
+		"jwt":     jwttoken,
 	})
 
 }

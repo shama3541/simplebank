@@ -1,17 +1,31 @@
 package api
 
 import (
+	"log"
+
 	"github.com/gin-gonic/gin"
 	db "github.com/shama3541/simplebank/db/database"
+	"github.com/shama3541/simplebank/token"
+	"github.com/shama3541/simplebank/util"
 )
 
 type Server struct {
-	store  *db.Store
-	router *gin.Engine
+	store      *db.Store
+	router     *gin.Engine
+	tokenMaker token.Maker
+	config     util.Config
 }
 
-func NewServer(store *db.Store) *Server {
-	server := &Server{store: store}
+func NewServer(config util.Config, store *db.Store) *Server {
+	tokenMaker, err := token.NewJWTMaker(config.TokenSymmetricKey)
+	if err != nil {
+		log.Fatalf("Error:%v", err)
+	}
+	server := &Server{
+		store:      store,
+		config:     config,
+		tokenMaker: tokenMaker,
+	}
 	server.router = gin.Default()
 
 	server.router.POST("/accounts", server.CreateAccount)

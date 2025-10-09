@@ -21,7 +21,7 @@ func main() {
 		log.Fatal("cannot connect to db", err)
 	}
 	store := db.NewStore(conn)
-	server := api.NewServer(&store)
+	server := api.NewServer(config, &store)
 	server.StartServer(config.Address)
 
 }

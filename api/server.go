@@ -27,13 +27,14 @@ func NewServer(config util.Config, store *db.Store) *Server {
 		tokenMaker: tokenMaker,
 	}
 	server.router = gin.Default()
-
-	server.router.POST("/accounts", server.CreateAccount)
-	server.router.GET("/accounts", server.GetAllAccounts)
-	server.router.GET("/accounts/:id", server.GetAccountByID)
-	server.router.POST("/transfer", server.CreateTransfer)
 	server.router.POST("/user", server.CreateUserHandler)
 	server.router.POST("/login", server.UserLoginHanderl)
+	authRoutes := server.router.Group("/").Use(authMiddleware(server.tokenMaker))
+	authRoutes.POST("/accounts", server.CreateAccount)
+	authRoutes.GET("/accounts", server.GetAllAccounts)
+	authRoutes.GET("/accounts/:id", server.GetAccountByID)
+	authRoutes.POST("/transfer", server.CreateTransfer)
+
 	return server
 
 }

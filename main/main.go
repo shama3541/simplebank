@@ -12,7 +12,7 @@ import (
 
 func main() {
 	var err error
-	config, err := util.LoadConfig("/Users/shamadeep/workspace/go-workspace/simple_bank/app.env")
+	config, err := util.LoadConfig("/app/app.env")
 	if err != nil {
 		log.Print("Error loading from config file", err)
 	}

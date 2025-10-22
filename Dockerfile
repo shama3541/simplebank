@@ -1,20 +1,24 @@
-# Use official Go image
-FROM golang:1.23.6 AS builder
+# Build stage
+FROM golang:1.23 AS builder
 
-# Create a working directory
 WORKDIR /app
 
-# Copy all source code
+COPY go.mod go.sum ./
+RUN go mod download
+
 COPY . .
 
-# Build from the correct folder
-RUN go build -o main ./main
+# ⚡ Build a static binary (this is the key line)
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /app/main ./main
 
-
-FROM  alpine:3.13
+# Final minimal image
+FROM alpine:3.19
 
 WORKDIR /app
+COPY --from=builder /app/main .
 
-COPY --from=BUILDER /app/main/ .
-# Set the command to run your binary
+COPY app.env .
+
+
+# Run your binary
 CMD ["/app/main"]
